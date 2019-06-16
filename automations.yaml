@@ -1,0 +1,118 @@
+# Automation scenarios
+
+#First scenario turns on/off home lights according to motion sensor and indoor brightness
+- id: turn_on_lights
+  alias: Turn on light when there is movement
+  trigger:
+    platform: state
+    entity_id: binary_sensor.motion
+    to: 'on'
+  condition:
+    condition: numeric_state
+    entity_id: sensor.brightness_in
+    below: 30
+  action:
+  - service: homeassistant.turn_on
+    entity_id: light.yeelight_color2_7c49ebb31597
+  - service: homeassistant.turn_on
+    entity_id: switch.sonoff_1000510df6
+
+- id: turn_off_lights_by_motion
+  alias: Turn off light 3 minutes after last movement
+  trigger:
+    platform: state
+    entity_id: binary_sensor.motion
+    to: 'off'
+    for:
+      minutes: 3
+  action:
+    service: homeassistant.turn_off
+    entity_id: light.yeelight_color2_7c49ebb31597
+
+#Second automation turns on/off the air conditioner according to indoor-outdoor temperature
+- id: turn_on_ac_heat
+  alias: Turn on AC heat mode
+  trigger:
+  - at: '08:30'
+    platform: time
+  condition:
+  - condition: and
+    conditions:
+    - below: '20'
+      condition: numeric_state
+      entity_id: sensor.temperature_in
+    - below: '17'
+      condition: numeric_state
+      entity_id: sensor.temperature_out
+  action:
+  - service: climate.turn_on
+  - data:
+      operation_mode: heat
+    service: climate.set_operation_mode
+  - data:
+      temperature: 22
+    service: climate.set_temperature
+  - data:
+      fan_mode: mid
+    service: climate.set_fan_mode
+
+- id: turn_on_ac_cool
+  alias: Turn on AC cool mode
+  trigger:
+  - at: '08:30'
+    platform: time
+  condition:
+  - condition: and
+    conditions:
+    - above: '25'
+      condition: numeric_state
+      entity_id: sensor.temperature_in
+    - above: '28'
+      condition: numeric_state
+      entity_id: sensor.temperature_out
+  action:
+  - service: climate.turn_on
+  - data:
+      operation_mode: cool
+    service: climate.set_operation_mode
+  - data:
+      temperature: 24
+    service: climate.set_temperature
+  - data:
+      fan_mode: mid
+    service: climate.set_fan_mode
+
+- id: turn_off_ac
+  alias: Turn off AC
+  trigger:
+  - at: '22:30'
+    platform: time
+  condition: []
+  action:
+  - service: climate.turn_off
+
+#Third scenario enables/disables Sonoff unit if the user is in the building
+- id: turn_on_sonoff_home_zone
+  alias: Zoning sonoff turn on
+  trigger:
+  - entity_id: device_tracker.redminote3_redmi
+    platform: state
+    to: home
+  condition: []
+  action:
+  - entity_id: switch.sonoff_1000510df6
+    service: homeassistant.turn_on
+
+- id: turn_off_sonoff_home_zone
+  alias: Zoning sonoff turn off
+  trigger:
+  - entity_id: device_tracker.redminote3_redmi
+    platform: state
+    to: not_home
+  condition:
+  - condition: state
+    entity_id: binary_sensor.motion
+    state: 'off'
+  action:
+  - entity_id: switch.sonoff_1000510df6
+    service: homeassistant.turn_off

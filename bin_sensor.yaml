@@ -1,0 +1,5 @@
+#Indoor motion sensor
+platform: mqtt
+state_topic: 'home/indoor/motion'
+name: 'Motion'
+device_class: motion

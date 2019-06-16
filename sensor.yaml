@@ -1,0 +1,36 @@
+# Weather prediction
+- platform: yr
+
+#Indoor sensors
+- platform: mqtt
+  name: "Temperature (IN)"
+  state_topic: "home/indoor/temperature"
+  unit_of_measurement: "ºC"
+
+- platform: mqtt
+  name: "Humidity (IN)"
+  state_topic: "home/indoor/humidity"
+  qos: 0
+  unit_of_measurement: "%"
+
+- platform: mqtt
+  state_topic: 'home/indoor/brightness'
+  name: 'Brightness (IN)'
+  unit_of_measurement: '%'
+
+#Outdoor sensors
+- platform: mqtt
+  name: "Temperature (OUT)"
+  state_topic: "home/outdoor/temperature"
+  unit_of_measurement: "ºC"
+
+- platform: mqtt
+  name: "Humidity (OUT)"
+  state_topic: "home/outdoor/humidity"
+  qos: 0
+  unit_of_measurement: "%"
+
+- platform: mqtt
+  state_topic: 'home/outdoor/brightness'
+  name: 'Brightness (OUT)'
+  unit_of_measurement: '%'

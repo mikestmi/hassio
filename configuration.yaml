@@ -1,0 +1,103 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 0
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Athens
+  # Customization file
+  customize: !include customize.yaml
+
+#Zoning
+zone:
+  - name: Work
+    latitude: !secret work_lat
+    longitude: !secret work_long
+    icon: mdi:office-building
+
+  - name: Home
+    latitude: !secret home_lat
+    longitude: !secret home_long
+    radius: 100
+    icon: mdi:home-assistant
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+# http:
+#   base_url: example.duckdns.org:8123
+
+# Discover some devices automatically
+discovery:
+
+# Sensors
+sensor: !include sensor.yaml
+binary_sensor: !include bin_sensor.yaml
+
+#Sonoff
+sonoff:
+  username: !secret sonoff_user
+  password: !secret sonof_pass
+  scan_interval: 60
+  grace_period: 600
+  api_region: 'eu'
+
+#Broadlink
+smartir:
+
+switch:
+  - platform: broadlink
+    host: 192.168.31.124
+    mac: !secret broadlink_mac
+    
+climate:
+  - platform: smartir
+    name: Office AC
+    unique_id: office_ac
+    device_code: 1000
+    controller_data: 192.168.31.124
+    temperature_sensor: sensor.temperature
+    humidity_sensor: sensor.humidity
+    power_sensor: binary_sensor.ac_power
+
+#InfluxDB
+influxdb:
+  host: 192.168.31.232
+  port: 8086
+  database: home_db
+  username: home_user
+  password: !secret influxdb_pass
+  max_retries: 3
+  default_measurement: state
+  include:
+    entities:
+       - sensor.brightness_in
+       - sensor.humidity_in
+       - sensor.temperature_in
+       - sensor.brightness_out
+       - sensor.humidity_out
+       - sensor.temperature_out
+       - sensor.sonoff_1000510df6_power
+       - light.yeelight_color2_7c49ebb358ba
+       - light.yeelight_color2_7c49ebb31597
+       - binary_sensor.motion
+       - climate.office_ac
+
+#Tracking
+device_tracker:
+  - platform: xiaomi
+    host: 192.168.32.1
+    password: !secret router_pass
+
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
