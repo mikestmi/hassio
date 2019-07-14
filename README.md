@@ -2,7 +2,7 @@ Energy consumption monitoring and restriction system for buildings.
 
 This project is about my diploma thesis.
 
-The system is based on the Home Assistant platform, using specialized platforms like WeMos and Raspberry Pie.
+The system is based on the Home Assistant platform, using specialized platforms like WeMos and Raspberry Pi.
 Home Assistant runs on the Raspberry Pie unit, while two WeMos units are equipped with sensors to measure indoor and outdoor
  temperature, humidity, brightness. Also the indoor WeMos unit has a motion sensor. In addition, there are a Sonoff unit to monitor
  the energy consumption and a Broadlink unit to control the air conditioner via infrared signals.
